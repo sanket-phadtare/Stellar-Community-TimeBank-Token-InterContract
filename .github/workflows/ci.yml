@@ -9,7 +9,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -21,11 +21,9 @@ jobs:
 
       - name: Install dependencies
         run: npm install
-        working-directory: ./community-timebank
 
       - name: Build project
         run: npm run build
-        working-directory: ./community-timebank
         env:
           VITE_CONTRACT_ID: ${{ secrets.VITE_CONTRACT_ID }}
           VITE_TOKEN_CONTRACT_ID: ${{ secrets.VITE_TOKEN_CONTRACT_ID }}
