@@ -148,7 +148,7 @@ export default function App() {
       <header className="app-header">
         <div className="brand">
           <div className="brand-dot" />
-          <h1>Stellar Powered Community Time-Bank With Time-Tokens & InterContract Calls</h1>
+          <h1>Stellar Powered Community Time-Bank</h1>
         </div>
         <div className="header-right">
           {publicKey ? (
