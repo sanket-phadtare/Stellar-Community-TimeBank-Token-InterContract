@@ -12,48 +12,46 @@ export function MobileNav({ activeTab, onTabChange, walletConnected, onConnectWa
   ]
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 md:hidden bg-white border-t border-gray-100 safe-area-pb">
-      <div className="flex">
-        {tabs.map(tab => {
-          const Icon    = tab.icon
-          const active  = activeTab === tab.id
-          const isWallet = tab.id === 'wallet'
+    <nav style={{
+      position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 40,
+      background: '#0a0a0a', borderTop: '1px solid #222',
+      display: 'flex',
+    }} className="md-hidden-nav">
+      {tabs.map(tab => {
+        const Icon = tab.icon
+        const active = activeTab === tab.id
+        const isWallet = tab.id === 'wallet'
 
-          return (
-            <button
-              key={tab.id}
-              onClick={() => {
-                if (isWallet && !walletConnected) {
-                  onConnectWallet()
-                } else {
-                  onTabChange(tab.id)
-                }
-              }}
-              className={`flex-1 flex flex-col items-center justify-center gap-1 py-3 transition-colors
-                ${active ? 'text-teal-600' : 'text-gray-400 hover:text-gray-600'}`}
-            >
-              <Icon active={active} />
-              <span className="text-[10px] font-medium">
-                {isWallet && walletConnected && balance !== null
-                  ? `${balance} TIME`
-                  : tab.label}
-              </span>
-              {active && (
-                <div className="absolute bottom-0 w-8 h-0.5 bg-teal-500 rounded-full" />
-              )}
-            </button>
-          )
-        })}
-      </div>
+        return (
+          <button
+            key={tab.id}
+            onClick={() => {
+              if (isWallet && !walletConnected) onConnectWallet()
+              else onTabChange(tab.id)
+            }}
+            style={{
+              flex: 1, display: 'flex', flexDirection: 'column',
+              alignItems: 'center', justifyContent: 'center',
+              gap: '4px', padding: '10px 0', background: 'none',
+              border: 'none', borderTop: active ? '2px solid #e00055' : '2px solid transparent',
+              color: active ? '#fff' : '#555', cursor: 'pointer',
+              transition: 'color 0.15s',
+            }}
+          >
+            <Icon active={active} />
+            <span style={{ fontSize: '10px', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+              {isWallet && walletConnected && balance !== null ? `${balance} TIME` : tab.label}
+            </span>
+          </button>
+        )
+      })}
     </nav>
   )
 }
 
-// ── Inline SVG icons ──────────────────────────────────────────────────────────
-
 function GridIcon({ active }) {
   return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
       stroke="currentColor" strokeWidth={active ? 2 : 1.5}
       strokeLinecap="round" strokeLinejoin="round">
       <rect x="3" y="3" width="7" height="7" rx="1"/>
@@ -66,7 +64,7 @@ function GridIcon({ active }) {
 
 function ActivityIcon({ active }) {
   return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
       stroke="currentColor" strokeWidth={active ? 2 : 1.5}
       strokeLinecap="round" strokeLinejoin="round">
       <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
@@ -76,7 +74,7 @@ function ActivityIcon({ active }) {
 
 function WalletIcon({ active }) {
   return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
       stroke="currentColor" strokeWidth={active ? 2 : 1.5}
       strokeLinecap="round" strokeLinejoin="round">
       <path d="M20 12V8H6a2 2 0 01-2-2V6a2 2 0 012-2h14v4"/>

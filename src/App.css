@@ -57,7 +57,7 @@ html, body, #root {
   height: 52px;
   flex-shrink: 0;
   border-bottom: 1px solid var(--light-border);
-  background: linear-gradient(to right, #c54a4a 60%,#c54a4a 0%);
+  background: linear-gradient(to right, #a22478 60%,#a22478 0%);
 }
 
 .brand {
@@ -66,7 +66,7 @@ html, body, #root {
   gap: 10px;
   padding: 0 24px;
   height: 100%;
-  background: #c54a4a;
+  background: #a22478;
   flex-shrink: 0;
 }
 
@@ -127,7 +127,7 @@ html, body, #root {
   padding: 5px 12px;
   border: 2px solid #ffffff;
   border-radius: var(--radius);
-  background: #a11414;
+  background: #a22478;
   color: #ffffff;
   cursor: pointer;
   transition: all 0.15s;
@@ -331,7 +331,7 @@ html, body, #root {
   letter-spacing: 0.12em;
   text-transform: uppercase;
   padding: 9px 20px;
-  background: #a11414;
+  background: #a22478;
   border: 2px solid #ffffff;
   color: var(--white);
   cursor: pointer;
@@ -790,7 +790,7 @@ html, body, #root {
   letter-spacing: 0.1em;
   text-transform: uppercase;
   padding: 6px 12px;
-  background: #a11414;
+  background: #a22478;
   border: 2px solid #ffffff;
   color: #ffffff;
   cursor: pointer;
@@ -813,7 +813,7 @@ html, body, #root {
 }
 
 .btn-post {
-  background: #a11414;
+  background: #a22478;
   color: #ffffff;
   border: 2px solid #ffffff;
   padding: 11px;
@@ -870,7 +870,7 @@ html, body, #root {
   display: inline-block;
   width: 20px; height: 20px;
   border: 4px solid currentColor;
-  border-top-color: #df2a2a;
+  border-top-color: #a22478;
   border-radius: 50%;
   animation: spin 0.6s linear infinite;
   vertical-align: middle;
@@ -961,7 +961,7 @@ html, body, #root {
 
 .modal-icon {
   width: 58px; height: 58px;
-  background: linear-gradient(135deg, #d83f31, #df3434);
+  background: linear-gradient(135deg, #a22478, #a22478);
   border-radius: 50%;
   margin: 0 auto 1.25rem;
   display: flex;
@@ -985,7 +985,7 @@ html, body, #root {
 }
 
 .modal-error {
-  color: #f87171;
+  color: #a22478;
   font-size: 12px;
   margin: -1rem 0 1rem;
 }
@@ -1027,3 +1027,19 @@ html, body, #root {
 *:focus-visible { outline: 1px solid #555555; outline-offset: 2px; }
 a { color: var(--left-muted); }
 a:hover { color: var(--black); }
+@media (max-width: 768px) {
+  .dashboard {
+    grid-template-columns: 1fr !important;
+    grid-template-rows: auto;
+  }
+
+  .panel {
+    width: 100%;
+    min-height: auto;
+  }
+
+  /* Hide stats panel on mobile */
+  .panel:last-child {
+    display: none;
+  }
+}

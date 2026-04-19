@@ -4,7 +4,6 @@ import WalletConnect from "./components/WalletConnect";
 import ServiceBoard from "./components/ServiceBoard";
 import OfferForm from "./components/OfferForm";
 import ActivityFeed from "./components/ActivityFeed";
-import { MobileNav } from "./components/MobileNav";
 import { registerUser, getBalance, offerService, requestService } from "./utils/contract";
 import "./App.css";
 
@@ -16,7 +15,6 @@ function short(addr) {
 export default function App() {
   const { publicKey, disconnect } = useWallet();
   const [tab, setTab] = useState("board");
-  const [mobileTab, setMobileTab] = useState("services");
   const [txStatus, setTxStatus] = useState(null);
   const [txMessage, setTxMessage] = useState("");
   const [lastTxHash, setLastTxHash] = useState(null);
@@ -35,66 +33,65 @@ export default function App() {
   }
 
   async function refreshBalance() {
-  if (!publicKey) return;
-  try {
-    const bal = await getBalance(publicKey);
-    setBalance(bal);
-    return bal;
-  } catch (e) {
-    console.error("Failed to fetch balance", e);
-    return null;
+    if (!publicKey) return;
+    try {
+      const bal = await getBalance(publicKey);
+      setBalance(bal);
+      return bal;
+    } catch (e) {
+      console.error("Failed to fetch balance", e);
+      return null;
+    }
   }
-}
 
-useEffect(() => {
-  if (!publicKey) {
-    setIsRegistered(false);
-    setBalance(null);
-    setTxLog([{ text: "Waiting for wallet...", active: false }]);
-    return;
-  }
-  addLog(`Wallet connected · ${short(publicKey)}`, false);
-  // Small delay to let RPC settle before reading
-  setTimeout(() => {
-    refreshBalance().then(bal => {
-      if (bal !== null && bal !== undefined && bal > 0) {
-        setIsRegistered(true);
-      } else {
-        setIsRegistered(false);
-      }
-    });
-  }, 1000);
-}, [publicKey]);
+  useEffect(() => {
+    if (!publicKey) {
+      setIsRegistered(false);
+      setBalance(null);
+      setTxLog([{ text: "Waiting for wallet...", active: false }]);
+      return;
+    }
+    addLog(`Wallet connected · ${short(publicKey)}`, false);
+    setTimeout(() => {
+      refreshBalance().then(bal => {
+        if (bal !== null && bal !== undefined && bal > 0) {
+          setIsRegistered(true);
+        } else {
+          setIsRegistered(false);
+        }
+      });
+    }, 1000);
+  }, [publicKey]);
 
   async function handleRegister() {
-  setRegistering(true);
-  addLog("Registering account on-chain...", true);
-  try {
-    await registerUser(publicKey);
-    addLog("Registered · received 5 time credits", true);
-    setIsRegistered(true);
-    setRefreshOffers(n => n + 1);
-    await new Promise(r => setTimeout(r, 4000)); // wait 4s for ledger to settle
-    await refreshBalance();
-  } catch (err) {
-    const msg = err?.message || "";
-    if (
-      msg.includes("Error(Contract, #1)") ||
-      msg.includes("Error(Contract, #2)") ||
-      msg.includes("already registered") ||
-      msg.includes("already a member")
-    ) {
+    setRegistering(true);
+    addLog("Registering account on-chain...", true);
+    try {
+      await registerUser(publicKey);
+      addLog("Registered · received 5 time credits", true);
       setIsRegistered(true);
+      setRefreshOffers(n => n + 1);
       await new Promise(r => setTimeout(r, 4000));
       await refreshBalance();
-      addLog("Already registered · credits ready", false);
-    } else {
-      addLog("Registration failed · " + msg.slice(0, 40), false);
+    } catch (err) {
+      const msg = err?.message || "";
+      if (
+        msg.includes("Error(Contract, #1)") ||
+        msg.includes("Error(Contract, #2)") ||
+        msg.includes("already registered") ||
+        msg.includes("already a member")
+      ) {
+        setIsRegistered(true);
+        await new Promise(r => setTimeout(r, 4000));
+        await refreshBalance();
+        addLog("Already registered · credits ready", false);
+      } else {
+        addLog("Registration failed · " + msg.slice(0, 40), false);
+      }
+    } finally {
+      setRegistering(false);
     }
-  } finally {
-    setRegistering(false);
   }
-}
 
   async function handleOffer(data) {
     setTxStatus("loading");
@@ -109,7 +106,6 @@ useEffect(() => {
       await refreshBalance();
       addLog(`Offer posted · "${data.description}"`, true);
       setTab("board");
-      setMobileTab("services");
     } catch (err) {
       setTxStatus("error");
       setTxMessage(err.message || "Transaction failed");
@@ -146,7 +142,7 @@ useEffect(() => {
   }
 
   return (
-    <div className="app pb-20 md:pb-0">
+    <div className="app">
 
       {/* ── Header ── */}
       <header className="app-header">
@@ -159,11 +155,11 @@ useEffect(() => {
             <>
               <span className="header-pill network">TESTNET</span>
               {CONTRACT_ID && (
-                <span className="header-pill hidden sm:inline-flex" title={CONTRACT_ID}>
+                <span className="header-pill contract-pill" title={CONTRACT_ID}>
                   Contract: {CONTRACT_ID.slice(0, 6)}…{CONTRACT_ID.slice(-4)}
                 </span>
               )}
-              <span className="header-pill hidden sm:inline-flex">{short(publicKey)}</span>
+              <span className="header-pill addr-pill">{short(publicKey)}</span>
               <button className="btn-disconnect" onClick={disconnect}>Disconnect</button>
             </>
           ) : null}
@@ -174,7 +170,7 @@ useEffect(() => {
       <div className="dashboard">
 
         {/* Panel 1: Balance & Wallet */}
-        <div className={`panel ${mobileTab !== "wallet" ? "hidden md:flex" : "flex"}`}>
+        <div className="panel">
           <div className="panel-label">Balance</div>
           <div className="panel-body">
             <div className="balance-block">
@@ -224,7 +220,7 @@ useEffect(() => {
         </div>
 
         {/* Panel 2: Services */}
-        <div className={`panel ${mobileTab !== "services" ? "hidden md:flex" : "flex"}`}>
+        <div className="panel">
           <div className="tab-bar">
             <button className={`tab-btn ${tab === "board" ? "active" : ""}`} onClick={() => setTab("board")}>
               Browse Services
@@ -238,7 +234,7 @@ useEffect(() => {
         </div>
 
         {/* Panel 3: History + Live Activity Feed */}
-        <div className={`panel ${mobileTab !== "activity" ? "hidden md:flex" : "flex"}`} style={{ flexDirection: "column" }}>
+        <div className="panel" style={{ flexDirection: "column" }}>
           <div className="history-header">
             <div className="history-title">
               <div className="live-dot" />
@@ -268,12 +264,9 @@ useEffect(() => {
               ))}
             </div>
           )}
-
-          {/* ── Live activity feed (new — real-time contract events) ── */}
           <div style={{ padding: "12px 16px 16px" }}>
             <ActivityFeed />
           </div>
-
           {txStatus && (
             <div style={{ padding: "0 20px 16px" }}>
               <div className={txStatus === "error" ? "toast-error" : "toast-confirmed"}>
@@ -286,8 +279,8 @@ useEffect(() => {
           )}
         </div>
 
-        {/* Panel 4: Stats — desktop only */}
-        <div className="panel hidden md:flex">
+        {/* Panel 4: Stats — hidden on mobile */}
+        <div className="panel panel-stats">
           <div className="panel-label">Contract Stats</div>
           <div className="panel-body">
             <div className="stats-grid">
@@ -328,16 +321,6 @@ useEffect(() => {
         </div>
 
       </div>
-
-      {/* ── Mobile bottom nav ── */}
-      <MobileNav
-        activeTab={mobileTab}
-        onTabChange={setMobileTab}
-        walletConnected={!!publicKey}
-        onConnectWallet={() => setMobileTab("wallet")}
-        balance={balance}
-      />
-
     </div>
   );
 }
